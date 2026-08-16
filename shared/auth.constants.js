@@ -1,0 +1,3 @@
+export const MIN_PASSWORD_LENGTH = 6;
+export const NUM_SALT_ROUNDS_FOR_PASSWORD_HASH = 10;
+export const MAX_FULLNAME_LENGTH = 30;
