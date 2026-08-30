@@ -174,7 +174,7 @@ const SignUpPage = () => {
           playsInline
           className="w-full h-full object-contain"
         >
-          <source src="/relay_animation.webm" type="video/webm" />
+          <source src="/chattr_animation.webm" type="video/webm" />
         </video>
       </div>
     </div>

@@ -20,7 +20,7 @@ const Navbar = () => {
               <div className="size-9 rounded-lg bg-primary/10 flex items-center justify-center">
                 <MessageSquare className="w-5 h-5 text-primary" />
               </div>
-              <h1 className="text-lg font-bold">Relay</h1>
+              <h1 className="text-lg font-bold">Chattr</h1>
             </Link>
           </div>
           {!authUser && <p className="text-center px-6 hidden sm:block sm:text-sm md:text-base">Connect with friends, share moments, and stay in touch.</p>}

@@ -7,7 +7,7 @@ const server = http.createServer(app);
 
 const allowedOrigin =
   process.env.NODE_ENV === "production"
-    ? "https://relay.azurewebsites.net"
+    ? "https://chattr.azurewebsites.net"
     : "http://localhost:5173";
 const io = new Server(server, {
   cors: {
