@@ -1,8 +1,30 @@
+
+Summaries and extracted tasks are stored in MongoDB. Smart replies are cached briefly by conversation context. `AI_RATE_LIMIT_WINDOW_MS` and `AI_RATE_LIMIT_MAX_REQUESTS` control the in-memory per-user AI request limit.
+
+AI rollout guidance:
+
+- Keep all three AI feature flags false until the provider key, logs, and error monitoring are ready.
+- Enable one capability at a time and watch structured `ai.*` events for provider latency, failures, and usage.
+- The default limiter is bounded and process-local. Set `AI_REDIS_URL` in a multi-instance deployment to preserve limits across workers with Redis.
+- Disable the feature flags immediately if provider errors, latency, or cost exceed the deployment budget.
+# Chattr
+
+## AI features
+
+The optional AI layer uses the existing Socket.IO connection and the current one-to-one conversation model. Configure the provider in `backend/.env` using `backend/.env.example`.
+
+Each capability is independently controlled:
+
+- `AI_AGENT_ENABLED` enables Ask AI, streaming answers, summaries, and task extraction.
+- `AI_SMART_REPLIES_ENABLED` enables composer reply suggestions.
+- `AI_AUTOCOMPLETE_ENABLED` enables inline completion.
+
+AI features remain unavailable unless `AI_API_KEY` is configured. Conversation context is bounded by `AI_MAX_CONTEXT_MESSAGES` and is only loaded for the authenticated user's selected conversation.
 # Chattr 💬
 
 Chattr is a real-time messaging application built using the **MERN stack** and **WebSockets**. It focuses on fast, reliable communication, secure authentication, and a clean, responsive user experience.
 
-[Live Demo](https://Chattr.azurewebsites.net/)
+[Live Demo](https://your-frontend-domain.example/)
 
 ## Features
 
@@ -35,8 +57,10 @@ Chattr is a real-time messaging application built using the **MERN stack** and *
 - Cloudinary
 
 ## Architecture Overview
-Chattr is deployed on Microsoft Azure.
-The backend server hosts both the API and the production frontend build, serving static assets and handling WebSocket connections.
+Chattr can be deployed on AWS. A typical production setup hosts the frontend on
+CloudFront/S3 and the backend on App Runner, ECS, or Elastic Beanstalk. The backend
+serves the API and Socket.IO connections while MongoDB, Cloudinary, and Klipy remain
+external services.
 
 - **REST APIs** handle authentication and initial data fetching
 - **WebSockets (Socket.io)** provide real-time messaging and events
@@ -105,6 +129,7 @@ The project requires the following environment variables:
 - `CLOUDINARY_API_SECRET` – API secret for Cloudinary
 - `FRONTEND_URL_PROD` – URL of your deployed frontend (used for CORS and redirects)
 - `FRONTEND_URL_DEV` – URL of your local frontend (usually `http://localhost:5173`)
+- `VITE_BACKEND_URL` – production backend URL injected during the frontend build
 - `KLIPY` – API key for the Klipy GIF API
 - `KLIPY_CUSTOMER_ID` – Your Klipy customer ID
 

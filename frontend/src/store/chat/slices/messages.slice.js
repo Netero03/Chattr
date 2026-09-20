@@ -24,7 +24,17 @@ const createMessagesSlice = (set, get) => ({
 
   subscribeToMessages: () => {
     const socket = useAuthStore.getState().socket;
-    get().setupSocketForTypingEvents(socket);
+    if (!socket) return;
+
+    const subscribe = () => {
+      get().setupSocketForTypingEvents(socket);
+      get().subscribeToAI(socket);
+    };
+
+    if (socket.connected) subscribe();
+    else socket.once("connect", subscribe);
+
+    socket.off("newMessage");
     socket.on("newMessage", ({ newMessage }) => {
       // Limits incoming messages to the currently selected user only
       let isNewMessageFromSelectedUser =
@@ -40,8 +50,11 @@ const createMessagesSlice = (set, get) => ({
 
   unsubscribeFromMessages: () => {
     const socket = useAuthStore.getState().socket;
+    if (!socket) return;
     socket.off("newMessage");
+    socket.off("connect");
     get().removeSocketFromTypingEvents(socket);
+    get().unsubscribeFromAI(socket);
   },
 });
 

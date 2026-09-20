@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useChatStore } from "../store/chat/useChatStore";
 import { Image, Send, X } from "lucide-react";
 import toast from "react-hot-toast";
@@ -13,11 +13,24 @@ const MessageInput = () => {
   const [imagePreview, setImagePreview] = useState(null);
 
   const fileInputRef = useRef(null);
+  const messageInputRef = useRef(null);
   const {
     sendMessage,
     emitTypingEvent,
     emitStopTypingEvent,
+    smartReplies,
+    requestSmartReplies,
+    autocomplete,
+    requestAutocomplete,
+    selectedUser,
+    askAI,
+    summarizeThread,
+    extractTasks,
   } = useChatStore();
+
+  useEffect(() => {
+    requestSmartReplies();
+  }, [requestSmartReplies, selectedUser?._id]);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -37,6 +50,7 @@ const MessageInput = () => {
 
   const handleTextChange = (e) => {
     setText(e.target.value);
+    requestAutocomplete(e.target.value);
 
     // Use a timer to control user typing socket events
     emitTypingEvent();
@@ -49,6 +63,39 @@ const MessageInput = () => {
       () => emitStopTypingEvent(),
       USER_TYPING_TIMEOUT_IN_MILLISECONDS,
     );
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Tab" && autocomplete) {
+      e.preventDefault();
+      setText(`${text}${autocomplete}`);
+    }
+    if (e.key === "Escape") {
+      useChatStore.setState({ autocomplete: "" });
+    }
+  };
+
+  const handleAskAI = () => {
+    const promptText = text.trim();
+    if (!promptText) {
+      messageInputRef.current?.focus();
+      toast("Type a question for Chattr AI first.");
+      return;
+    }
+    askAI(promptText);
+    setText("");
+    useChatStore.setState({ autocomplete: "" });
+    emitStopTypingEvent();
+  };
+
+  const handleSummary = () => {
+    summarizeThread();
+    toast("Generating a conversation summary...");
+  };
+
+  const handleTasks = () => {
+    extractTasks();
+    toast("Extracting action items...");
   };
 
   const removeImage = () => {
@@ -102,6 +149,31 @@ const MessageInput = () => {
         </div>
       )}
 
+      {smartReplies.length > 0 && (
+        <div className="mb-2 flex gap-2 overflow-x-auto">
+          {smartReplies.map((reply) => (
+            <button key={reply} type="button" className="btn btn-xs btn-outline whitespace-nowrap" onClick={() => setText(reply)}>
+              {reply}
+            </button>
+          ))}
+        </div>
+      )}
+      <div className="mb-2 flex items-center gap-2">
+        <button type="button" className="btn btn-xs btn-outline" onClick={handleAskAI}>
+          Ask AI
+        </button>
+        <button type="button" className="btn btn-xs btn-outline" onClick={handleSummary}>
+          Summarize
+        </button>
+        <button type="button" className="btn btn-xs btn-outline" onClick={handleTasks}>
+          Tasks
+        </button>
+      </div>
+      {autocomplete && text && (
+        <button type="button" className="mb-1 text-left text-sm opacity-50" onClick={() => setText(`${text}${autocomplete}`)}>
+          {text}{autocomplete}
+        </button>
+      )}
       <form onSubmit={handleSendMessage} className="flex items-center gap-2">
         <div className="flex-1 flex gap-2">
           <input
@@ -110,7 +182,9 @@ const MessageInput = () => {
             placeholder="Type a message..."
             maxLength={MAX_MESSAGE_LENGTH}
             value={text}
+            ref={messageInputRef}
             onChange={handleTextChange}
+            onKeyDown={handleKeyDown}
           />
           <input
             type="file"

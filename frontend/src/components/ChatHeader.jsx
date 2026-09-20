@@ -1,6 +1,6 @@
 import { useAuthStore } from "../store/auth/useAuthStore";
 import { useChatStore } from "../store/chat/useChatStore";
-import {Pin, PinOff} from "lucide-react";
+import { Pin, PinOff } from "lucide-react";
 
 const ChatHeader = () => {
   const {
@@ -22,6 +22,8 @@ const handleTogglePin = () => {
       pinUser(selectedUser._id);
     }
   };
+
+  if (!selectedUser) return null;
 
   return (
     <div className="py-2.5 px-4 border-b border-base-300">

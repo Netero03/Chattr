@@ -1,13 +1,14 @@
 import { Server } from "socket.io";
 import http from "http";
 import express from "express";
+import { registerAISocketHandlers } from "./aiSocket.js";
 
 const app = express();
 const server = http.createServer(app);
 
 const allowedOrigin =
   process.env.NODE_ENV === "production"
-    ? "https://chattr.azurewebsites.net"
+    ? process.env.FRONTEND_URL_PROD
     : "http://localhost:5173";
 const io = new Server(server, {
   cors: {
@@ -25,6 +26,7 @@ io.on("connection", (socket) => {
   if (userId) {
     userSocketMap[userId] = socket.id;
   }
+  registerAISocketHandlers(socket);
   io.emit("getOnlineUsers", Object.keys(userSocketMap));
 
   socket.on("typing", ({ to }) => {

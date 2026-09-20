@@ -9,6 +9,7 @@
     "jsonwebtoken": "^9.0.3",
     "mongodb": "^7.0.0",
     "mongoose": "^9.0.0",
+    "redis": "^5.12.1",
     "socket.io": "^4.8.1"
   },
   "devDependencies": {
@@ -19,7 +20,8 @@
   "scripts": {
     "dev": "nodemon src/index.js",
     "start": "node src/index.js",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "test": "node --test src/services/ai/*.test.js src/lib/aiSocket.test.js"
   },
   "type": "module"
 }
