@@ -79,7 +79,9 @@ const createAISlice = (set, get) => ({
   requestAutocomplete: (draft) => {
     const socket = useAuthStore.getState().socket;
     const { selectedUser } = get();
-    if (draft.trim().length >= 8) {
+    const normalizedDraft = draft.trim();
+
+    if (normalizedDraft.length >= 8) {
       socket?.emit("ai:autocomplete:get", { threadId: selectedUser?._id, draft });
     } else {
       set({ autocomplete: "" });

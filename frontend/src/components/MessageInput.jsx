@@ -50,7 +50,6 @@ const MessageInput = () => {
 
   const handleTextChange = (e) => {
     setText(e.target.value);
-    requestAutocomplete(e.target.value);
 
     // Use a timer to control user typing socket events
     emitTypingEvent();
@@ -63,6 +62,15 @@ const MessageInput = () => {
       () => emitStopTypingEvent(),
       USER_TYPING_TIMEOUT_IN_MILLISECONDS,
     );
+  };
+
+  const handleAutocomplete = () => {
+    if (text.trim().length < 8) {
+      messageInputRef.current?.focus();
+      toast("Type at least 8 characters before requesting autocomplete.");
+      return;
+    }
+    requestAutocomplete(text);
   };
 
   const handleKeyDown = (e) => {
@@ -161,6 +169,9 @@ const MessageInput = () => {
       <div className="mb-2 flex items-center gap-2">
         <button type="button" className="btn btn-xs btn-outline" onClick={handleAskAI}>
           Ask AI
+        </button>
+        <button type="button" className="btn btn-xs btn-outline" onClick={handleAutocomplete}>
+          Autocomplete
         </button>
         <button type="button" className="btn btn-xs btn-outline" onClick={handleSummary}>
           Summarize
