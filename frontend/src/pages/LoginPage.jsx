@@ -21,7 +21,7 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="h-screen grid lg:grid-cols-2">
+    <div className="h-screen ">
       {/* Left Side - Form */}
       <div className="flex flex-col justify-center items-center p-6 sm:p-12">
         <div className="w-full max-w-md space-y-8">
@@ -126,7 +126,7 @@ const LoginPage = () => {
       </div>
 
       {/* right side: animation*/}
-      <div className="flex flex-col h-full">
+      {/* <div className="flex flex-col h-full">
         <div className="hidden md:flex">
           <video
             autoPlay
@@ -138,7 +138,7 @@ const LoginPage = () => {
             <source src="/chattr_animation.webm" type="video/webm" />
           </video>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };
