@@ -16,8 +16,12 @@ const createSidebarSlice = (set, get) => ({
       await get().getUnreadUserIds();
 
       const response = await chatService.fetchSidebarUsers();
-      set({ pinnedChatUsers: response.data.pinnedUsers });
-      set({ otherChatUsers: response.data.otherUsers });
+      const { pinnedUsers = [], otherUsers = [] } = response.data ?? {};
+
+      set({
+        pinnedChatUsers: Array.isArray(pinnedUsers) ? pinnedUsers : [],
+        otherChatUsers: Array.isArray(otherUsers) ? otherUsers : [],
+      });
     } catch (error) {
       handleToastErrorMessage(error);
     } finally {
