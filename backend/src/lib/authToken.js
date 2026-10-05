@@ -19,9 +19,10 @@ export const setJwtCookie = (userId, res) => {
             // Prevents XSS attacks
             httpOnly: true,
             // Prevents CSRF attacks
-            sameSite: "strict",
-            // During development, localhost uses http. The final production app will use https instead.
-            secure: process.env.NODE_ENV !== "development"
+            sameSite: "none",
+            // Ensures the cookie is only sent over HTTPS
+            secure: true
+            
         }
     );
 };
